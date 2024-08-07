@@ -1,16 +1,16 @@
 const User = require("../models/user")
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcrypt')
 const { SECRET_TOKEN } = require("../config/crypto");
 
 
 
 // Controller for user registeration
 exports.register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
     try {
         const hasdedPAss = await bcrypt.hash(password, 10)
-        user = await User.create({ username, email, password: hasdedPAss })
+        const user = await User.create({ name, email, password: hasdedPAss })
         res.status(201).json({ msg: " user cretaed successfully!" })
 
     } catch (error) {
@@ -20,19 +20,21 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const user = await AuthUser.findOne({ email: req.body.email });
+        const { email, password } = req.body
+        const user = await User.findOne({ email });
         if (!user) return res.status(401).send("Invalid email");
 
-        if (req.body.password !== user.password) return res.status(401).send("Email or Password is wrong");
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).send("Email or Password is wrong");
 
-        let payload = { id: user._id};
+        let payload = { id: user._id };
         const token = jwt.sign(payload, SECRET_TOKEN);
         console.log("token is generated", token)
 
         res.cookie('token', token, {
-            httpOnly: true, 
+            httpOnly: true,
             // maxAge: 60 * 60 * 1000
-          });
+        });
         res.status(200).send({
             message: "User successfully logged in",
         });
