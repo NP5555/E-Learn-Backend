@@ -7,7 +7,4 @@ router.get("/courses", searchControl.searchApi),
 
 router.get('/courses/:id', searchControl.searchByID),
 
-
-
-
 module.exports = router
