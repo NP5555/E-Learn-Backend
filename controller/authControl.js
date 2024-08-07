@@ -50,22 +50,17 @@ exports.login = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const cookie = req.cookies.token
-    jwt.verify(cookie, SECRET_TOKEN, async (error, decode) => {
-        if (error) {
-            console.log("Error in verify", error)
-        }
-        console.log("The id is", decode.id)
-        const delUser = await User.deleteOne({_id: decode.id})
-        console.log("user is", delUser)
-        
-        if (delUser.deletedCount === 0) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.sendStatus(204)
-        // console.log("User deleted", delUser)
-        // delUser.
-    })
-    console.log("the cookie is", cookie)
+        jwt.verify(cookie, SECRET_TOKEN, async (error, decode) => {
+            if (error) {
+                console.log("Error in verify", error)
+            }
+            console.log("The id is", decode.id)
+            const delUser = await User.deleteOne({ _id: decode.id })
+            if (delUser.deletedCount === 0) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            res.sendStatus(204)
+        })
     } catch (error) {
         console.log(error)
     }
