@@ -15,4 +15,4 @@ router.post("/login", authControll.login)
 
 
 
-module.exports = router
+module.exports = router ;
