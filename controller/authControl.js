@@ -43,42 +43,19 @@ exports.login = async (req, res) => {
 };
 
 
-// exports.SignOut = async (req , res) => {
-//     try {
-//         const cookie = req.cookies.token;
-//         console.log(cookie)
-//         jwt.verify(cookie, SECRET_TOKEN , async (err , docode) => {
-//             if (err) {
-//                 res.status(403).json({
-//                     message: "Token not found"
-//                 })
-//             }
-
-//         }
-//         )
-//         res.clearCookie('token')
-//     } catch (error) {
-        
-//     }
-// }
 
 exports.SignOut = async (req, res) => {
     try {
         const cookie = req.cookies.token;
-
         if (!cookie) {
             return res.status(401).json({ message: "No token provided" });
         }
-
         jwt.verify(cookie, SECRET_TOKEN, (err, decoded) => {
             if (err) {
                 return res.status(403).json({ message: "Invalid token" });
             }
-
             // Clear the token cookie
             res.clearCookie('token');
-
-            // Send a success response
             return res.status(200).json({ message: "Successfully signed out" });
         });
     } catch (error) {
