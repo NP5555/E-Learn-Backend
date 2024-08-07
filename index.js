@@ -2,7 +2,8 @@ const express = require("express")
 const app = express()
 const mongoose = require("mongoose");
 require("dotenv").config()
-const authRouter = require("./routes/useRouter")
+const userRouter = require("./routes/useRouter")
+const searchRouter = require("./routes/searchRouter")
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
@@ -11,8 +12,10 @@ const port = process.env.port
 app.use(cookieParser());
 app.use(cors());
 app.use(express.json())
-app.use("/", authRouter)
 
+
+app.use("/auth", userRouter)
+app.use("/search", searchRouter)
 
 
 
