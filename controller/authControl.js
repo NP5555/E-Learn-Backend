@@ -24,11 +24,15 @@ exports.login = async (req, res) => {
         if (!user) return res.status(401).send("Invalid email");
 
         if (req.body.password !== user.password) return res.status(401).send("Email or Password is wrong");
-        //   login kryga
-        let payload = { id: user._id, user_type_id: user.user_type_id };
-        const token = jwt.sign(payload, config.TOKEN_SECRET);
+
+        let payload = { id: user._id};
+        const token = jwt.sign(payload, SECRET_TOKEN);
         console.log("token is generated", token)
 
+        res.cookie('token', token, {
+            httpOnly: true, 
+            // maxAge: 60 * 60 * 1000
+          });
         res.status(200).send({
             message: "User successfully logged in",
         });
