@@ -1,4 +1,4 @@
-const User = require("../models/user")
+const User = require("../models/userScheme")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 const { SECRET_TOKEN } = require("../config/crypto");
@@ -18,6 +18,7 @@ exports.register = async (req, res) => {
     }
 }
 
+// Controller for user Login
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body
@@ -43,7 +44,7 @@ exports.login = async (req, res) => {
 };
 
 
-
+// Controller for user signout
 exports.SignOut = async (req, res) => {
     try {
         const cookie = req.cookies.token;
@@ -56,7 +57,7 @@ exports.SignOut = async (req, res) => {
             }
             // Clear the token cookie
             res.clearCookie('token');
-            return res.status(200).json({ message: "Successfully signed out" });
+            return res.status(200).redirect('/login');
         });
     } catch (error) {
         console.error("Error during sign out", error);
@@ -65,7 +66,7 @@ exports.SignOut = async (req, res) => {
 };
 
 
-
+// Controller to delete user account
 exports.deleteUser = async (req, res) => {
     try {
         const cookie = req.cookies.token
