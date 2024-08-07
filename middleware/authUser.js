@@ -1,19 +1,31 @@
-const jwt = require("jsonwebtoken")
+const jwt = require('jsonwebtoken');
 const { SECRET_TOKEN } = require("../config/crypto")
 
 
-exports.verifyUserToken = (req, res , next) => {
+exports.verifyUserToken = async (req, res, next) => {
+
     try {
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).redirect('/login');
+        const cookie = req.cookies.token;
+        console.log("the cookie is", cookie)
+        if (!cookie) {
+            return res.status(401).json({
+                msg: "Unauthorized user!"
+            });
         }
 
-        const verifiedUSer = jwt.verify(token, SECRET_TOKEN)
-        if (!verifiedUSer) {
-            return res.status(401).redirect('/login');
-        }
-        req.user = verifiedUSer;
+        console.log(SECRET_TOKEN)
+        jwt.verify(cookie, SECRET_TOKEN, (err, decode) => {
+            res.send(err);
+            if (!decode) {
+                return res.status(401).json({
+                    msg: "user not verified"
+                });
+            }
+        });
+
+        res.status(200).json({
+            message: "Authorized User"
+        })
         next();
     } catch (error) {
         console.log(error)

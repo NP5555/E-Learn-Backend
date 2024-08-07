@@ -57,7 +57,7 @@ exports.SignOut = async (req, res) => {
             }
             // Clear the token cookie
             res.clearCookie('token');
-            return res.status(200).redirect('/login');
+            return res.status(200).json({ message: "User Sign out successfully" });
         });
     } catch (error) {
         console.error("Error during sign out", error);
@@ -90,4 +90,7 @@ exports.deleteUser = async (req, res) => {
 }
 
 
+exports.test = async (req ,res) => {
+    // res.send("hello")
+}
 
