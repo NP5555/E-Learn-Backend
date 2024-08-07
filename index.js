@@ -26,7 +26,9 @@ mongoose.connect(
   .then(() => {
     console.log("Connected To MongoDB"),
       app.listen(port, () => {
+
         console.log("Server running on localhost:" + port);
+
       });
   })
-  .catch((err) => console.log(`unable to connet with dB : ${err} `));
+  .catch((err) => console.log(`unable to connet with dB : ${err.stack} `));
