@@ -21,4 +21,4 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('Auth', userSchema);
+module.exports = mongoose.model('authUSer', userSchema);
