@@ -88,6 +88,7 @@ exports.requestOtp = async (req, res) => {
 // request change otp
 exports.resetPassword = async (req, res) => {
     const { email, otp, newPassword } = req.body;
+
     if (!email || !otp || !newPassword) {
         return res
             .status(400)
@@ -100,7 +101,7 @@ exports.resetPassword = async (req, res) => {
         if (user.otp.otp !== otp || user.expireDate < Date.now()) {
             return res.status(400).json({ error: "Invalid or expired OTP" });
         }
-        const hasdNewPassword = bcrypt.hash(newPassword, 10)
+        const hasdNewPassword = await bcrypt.hash(newPassword, 10)
         user.password = hasdNewPassword;
         user.otp = null;
         user.otpExpires = null;
