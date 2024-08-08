@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
     const { name, email, password } = req.body;
     try {
         const hasdedPAss = await bcrypt.hash(password, 10)
-        const user = await User.create({ name, email, password: hasdedPAss })
+        await User.create({ name, email, password: hasdedPAss })
         res.status(201).json({ msg: " user cretaed successfully!" })
 
     } catch (error) {
@@ -45,70 +45,72 @@ exports.login = async (req, res) => {
     }
 };
 
+// To frequestOpt
 exports.requestOtp = async (req, res) => {
     const email = req.body.email;
     const user = await User.findOne({ email: email });
     if (!user) return res.status(400).json({ message: "User Not Found" });
-  
+
     const otp = utils.generateRandomFourDigitNumber();
     const otpExpires = Date.now() + 180 * 1000;
-  
+
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.email,
-        pass: process.env.password,
-      },
+        service: "gmail",
+        auth: {
+            user: process.env.email,
+            pass: process.env.password,
+        },
     });
     async function sendOtpEmail(email, otp) {
-      const mailOptions = {
-        from: process.env.email,
-        to: email,
-        subject: "Password Reset OTP",
-        text: `Your OTP for resetting the password is ${otp}`,
-        html: `<b>Your OTP for resetting the password is <strong>${otp}</strong></b>`,
-      };
-  
-      try {
-        await transporter.sendMail(mailOptions);
-      } catch (error) {
-        console.error("Error sending OTP:", error);
-        res.status(500).json({ message: error.message });
-      }
+        const mailOptions = {
+            from: process.env.email,
+            to: email,
+            subject: "Password Reset OTP",
+            text: `Your OTP for resetting the password is ${otp}`,
+            html: `<b>Your OTP for resetting the password is <strong>${otp}</strong></b>`,
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+        } catch (error) {
+            console.error("Error sending OTP:", error);
+            res.status(500).json({ message: error.message });
+        }
     }
-  
+
     user.otp.otp = otp;
     user.otp.expireDate = otpExpires;
     await user.save();
     await sendOtpEmail(email, otp);
     res.status(200).json({ message: "OTP sent to your email" });
-  };
-  
-  // request change otp
-    exports.resetPassword = async (req, res) => {
+};
+
+// request change otp
+exports.resetPassword = async (req, res) => {
     const { email, otp, newPassword } = req.body;
     if (!email || !otp || !newPassword) {
-      return res
-        .status(400)
-        .json({ error: "Email, OTP, and new password are required" });
+        return res
+            .status(400)
+            .json({ error: "Email, OTP, and new password are required" });
     }
     try {
-      const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ error: "User not found" });
-  
-      if (user.otp.otp !== otp || user.expireDate < Date.now()) {
-        return res.status(400).json({ error: "Invalid or expired OTP" });
-      }
-      user.password = newPassword;
-      user.otp = null;
-      user.otpExpires = null;
-      await user.save();
-  
-      res.status(200).json({ message: "Password reset successfully" });
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        if (user.otp.otp !== otp || user.expireDate < Date.now()) {
+            return res.status(400).json({ error: "Invalid or expired OTP" });
+        }
+        const hasdNewPassword = bcrypt.hash(newPassword, 10)
+        user.password = hasdNewPassword;
+        user.otp = null;
+        user.otpExpires = null;
+        await user.save();
+
+        res.status(200).json({ message: "Password reset successfully" });
     } catch (error) {
-      res.status(500).json({ error: "Error resetting password" });
+        res.status(500).json({ error: "Error resetting password" });
     }
-  };
+};
 
 // Controller for user signout
 exports.SignOut = async (req, res) => {
@@ -126,7 +128,6 @@ exports.SignOut = async (req, res) => {
             return res.status(200).json({ message: "User Sign out successfully" });
         });
     } catch (error) {
-        console.error("Error during sign out", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -156,7 +157,7 @@ exports.deleteUser = async (req, res) => {
 }
 
 
-exports.test = async (req ,res) => {
+exports.test = async (req, res) => {
     // res.send("hello")
 }
 
