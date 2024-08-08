@@ -21,12 +21,10 @@ exports.verifyUserToken = async (req, res, next) => {
                     msg: "user not verified"
                 });
             }
+            req.id = decode.id;
+            next();
         });
 
-        res.status(200).json({
-            message: "Authorized User"
-        })
-        next();
     } catch (error) {
         console.log(error)
         res.status(400).send("Invalid Token");

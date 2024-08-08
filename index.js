@@ -18,17 +18,13 @@ app.use("/auth", userRouter)
 app.use("/search", searchRouter)
 
 
-
-
 mongoose.connect(
-    "mongodb://localhost:27017/Auth"
-  )
+  "mongodb://localhost:27017/Auth"
+)
   .then(() => {
     console.log("Connected To MongoDB"),
       app.listen(port, () => {
-
         console.log("Server running on localhost:" + port);
-
       });
   })
   .catch((err) => console.log(`unable to connet with dB : ${err.stack} `));
