@@ -1,4 +1,4 @@
-const User = require("../models/userScheme")
+const User = require("../models/userSchema")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 const utils = require("../utils/utils");
@@ -141,13 +141,13 @@ exports.deleteUser = async (req, res) => {
     try {
         const userId = req.id;
 
-    const delUser = await User.deleteOne({ _id: userId })
+        const delUser = await User.deleteOne({ _id: userId })
         if (!delUser) {
             console.log(1)
             return res.status(404).json({ message: 'User not found' });
         }
         res.status(200).json({
-            message: "User seleted successfully!"
+            message: "User deleted successfully!"
         })
 
     } catch (error) {
@@ -155,9 +155,44 @@ exports.deleteUser = async (req, res) => {
     }
 }
 
+// Too change the user password!
+exports.changePassword = async (req, res) => {
+    try {
+        const { oldPassword, newPassword, confirmPassword } = req.body;
+        const userID = req.id;
 
+        // To find the user
+        const fetchUser = await User.findOne({ _id: userID });
+        console.log("Fetched User's password is", fetchUser.password);
+ 
+        // Comparing passwords
+        const isMatch = await bcrypt.compare(oldPassword, fetchUser.password);
+        if (!isMatch) {
+            return res.status(404).json({
+                message: "Wrong Password!"
+            });
+        }
 
-exports.test = async (req, res) => {
-    // res.send("hello")
-}
+        // Check new passwords match
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({
+                message: "New passwords do not match!"
+            });
+        }
+        // Saving new password after hashing
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        fetchUser.password = hashedPassword;
+        await fetchUser.save();
+
+        res.status(200).json({
+            message: "Password changed successfully!"
+        });
+    } catch (error) {
+        console.log("The error is", error);
+        res.status(500).json({
+            message: "An error occurred",
+            error: error.message
+        });
+    }
+};
 

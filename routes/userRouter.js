@@ -9,7 +9,7 @@ router.post("/login", authControll.login)
 router.post("/signout", authControll.SignOut)
 router.post("/request-otp", authControll.requestOtp);
 router.post("/reset-password", authControll.resetPassword);
-router.get("/test",verifyUserToken, authControll.test)
+router.post("/change-password",verifyUserToken, authControll.changePassword)
 router.delete("/delete", verifyUserToken , authControll.deleteUser)
 
 
