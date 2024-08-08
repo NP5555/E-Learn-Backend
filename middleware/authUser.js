@@ -11,8 +11,6 @@ exports.verifyUserToken = async (req, res, next) => {
                 msg: "Unauthorized user!"
             });
         }
-
-        console.log(SECRET_TOKEN)
         jwt.verify(cookie, SECRET_TOKEN, (err, decode) => {
             if (err) {
               return  res.status(403).json({

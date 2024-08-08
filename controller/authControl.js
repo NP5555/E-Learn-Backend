@@ -139,25 +139,22 @@ exports.SignOut = async (req, res) => {
 // Controller to delete user account
 exports.deleteUser = async (req, res) => {
     try {
-        const cookie = req.cookies.token
-        jwt.verify(cookie, SECRET_TOKEN, async (error, decode) => {
-            if (error) {
-                res.status(408).json({
-                    message: "Cookie not found!"
-                })
-            }
-            const delUser = await User.deleteOne({ _id: decode.id })
-            if (delUser.deletedCount === 0) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-            res.status(204).json({
-                message: "User deleted Successfully!"
-            })
+        const userId = req.id;
+
+    const delUser = await User.deleteOne({ _id: userId })
+        if (!delUser) {
+            console.log(1)
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({
+            message: "User seleted successfully!"
         })
+
     } catch (error) {
-        console.log(error);
+        console.log(error.stack);
     }
 }
+
 
 
 exports.test = async (req, res) => {
