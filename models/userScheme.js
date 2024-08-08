@@ -19,6 +19,8 @@ const userSchema = new mongoose.Schema({
         default: 0, 
         
     },
+    coursesBought: [],
+    otp: { otp: { type: Number }, expireDate: { type: Number } },
 });
 
-module.exports = mongoose.model('authUSer', userSchema);
+module.exports = mongoose.model('authUser', userSchema);

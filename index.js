@@ -3,7 +3,7 @@ const app = express()
 const mongoose = require("mongoose");
 require("dotenv").config()
 const userRouter = require("./routes/userRouter")
-const searchRouter = require("./routes/searchRouter")
+const courseRouter = require("./routes/courseRouter")
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
@@ -15,11 +15,11 @@ app.use(express.json())
 
 
 app.use("/auth", userRouter)
-app.use("/search", searchRouter)
+app.use("/courses", courseRouter)
 
 
 mongoose.connect(
-  "mongodb://localhost:27017/Auth"
+  "mongodb://localhost:27017/E-learning"
 )
   .then(() => {
     console.log("Connected To MongoDB"),
