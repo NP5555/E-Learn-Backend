@@ -6,7 +6,6 @@ exports.verifyUserToken = async (req, res, next) => {
 
     try {
         const cookie = req.cookies.token;
-        console.log("the cookie is", cookie)
         if (!cookie) {
             return res.status(401).json({
                 msg: "Unauthorized user!"
@@ -15,11 +14,10 @@ exports.verifyUserToken = async (req, res, next) => {
 
         console.log(SECRET_TOKEN)
         jwt.verify(cookie, SECRET_TOKEN, (err, decode) => {
-            res.send(err);
-            if (!decode) {
-                return res.status(401).json({
-                    msg: "user not verified"
-                });
+            if (err) {
+              return  res.status(403).json({
+                Message: err
+              })
             }
             req.id = decode.id;
             next();
