@@ -179,10 +179,20 @@ exports.addSaved = async (req, res) => {
   try {
     const userId = req.id
     const courseId = req.body.courseId;
-    const user = await User.updateOne({ _id: userId }, {$push: {savedCourses: courseId}});
-    res.status(200).json(user)
+    const user = await User.findOne({ _id: userId })
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.savedCourses.push(courseId);
+    const savedUser = await user.save();
+    res.status(200).json({
+      Message: "Course added successfully!",
+      User: savedUser
+    })
   } catch (error) {
-    console.log("error id", error)
+    res.status(408).json({
+      error: error
+    })
   }
 }
 
@@ -191,9 +201,16 @@ exports.deleteSaved = async (req, res) => {
   try {
     const userId = req.id
     const courseId = req.body.courseId;
-    const user = await User.updateOne({ _id: userId }, {$pull: {savedCourses: courseId}});
-    res.status(200).json(user)
+    const user = await User.findOne({ _id: userId })
+    user.savedCourses.pull(courseId);
+    const updatedUser = await user.save();
+    res.status(200).json({
+      Message: "Course deleted successfully!",
+      User: updatedUser
+    })
   } catch (error) {
-    console.log("error id", error)
+    res.status(408).json({
+      error: error
+    })
   }
 }
