@@ -22,21 +22,20 @@ exports.searchApi = async (req, res, next) => {
 exports.shortDetails = async (req, res) => {
   try {
     const projection = {
-      'data.title': 1,      
-      'data.category': 1,   
-      'data.rating': 1,     
-      'data.price': 1,  
-      'data.reviews': 1          
-  };
-    const shortData = await Course.find({}, projection)
-    res.status(200).json(shortData)
+      "data.title": 1,
+      "data.category": 1,
+      "data.rating": 1,
+      "data.price": 1,
+      "data.reviews": 1,
+    };
+    const shortData = await Course.find({}, projection);
+    res.status(200).json(shortData);
   } catch (error) {
     res.status(404).json({
-      error: error
-    })
+      error: error,
+    });
   }
-}
-
+};
 
 // Search by ID pr anyuthing we want!
 exports.searchByID = async (req, res) => {
@@ -44,21 +43,18 @@ exports.searchByID = async (req, res) => {
   try {
     const id = parseInt(req.params.id); // Convert the id parameter to an integer
 
-
     if (isNaN(id)) {
-      return res.status(400).json({ message: 'Invalid id parameter' });
+      return res.status(400).json({ message: "Invalid id parameter" });
     }
     const course = data.filter((course) => course.id === id); // Query for courses with id greater than the provided value
     if (course.length < 1) {
-      return res.status(404).json({ msg: "CourseID not found" })
+      return res.status(404).json({ msg: "CourseID not found" });
     }
 
-    res.json(course)
-
-
+    res.json(course);
   } catch (error) {
-    console.error('Error fetching courses:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error fetching courses:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -80,11 +76,11 @@ exports.search = async (req, res) => {
 
     const searchCriteria = query
       ? {
-        $or: [
-          { "data.title": { $regex: regex } },
-          { "data.category": { $regex: regex } },
-        ],
-      }
+          $or: [
+            { "data.title": { $regex: regex } },
+            { "data.category": { $regex: regex } },
+          ],
+        }
       : {};
 
     const courses = await Course.find(searchCriteria)
