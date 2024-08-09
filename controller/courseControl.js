@@ -143,3 +143,43 @@ exports.searchCategory = async (req, res) => {
       .json({ error: "Error fetching courses", msg: error.message });
   }
 };
+
+
+
+
+
+
+// exports.addSaved = async (req, res) => {
+
+//   try {
+
+//     const { userId, courseId } = req.body;
+
+//     if (!userId || !courseId) {
+//       return res.status(400).json({ message: 'User ID and Course ID are required' });
+//     }
+
+//     const course = await Course.findById(courseId);
+//     if (!course) {
+//       return res.status(404).json({ message: 'Course not found' });
+//     }
+
+
+//     const user = await user.findById(user.Id);
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+//     if (!user.savedCourses.includes(courseId)) {
+//       user.savedCourses.push(courseId);
+//       await user.save();
+//     }
+
+
+//     res.status(200).json({ message: 'Course added to saved list', user });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error saving course', error });
+//   }
+// };
+
+
+
