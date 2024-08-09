@@ -1,11 +1,11 @@
-const User = require("../models/userScheme");
+const User = require("../models/userSchema");
 
 exports.userData = async (req, res) => {
     try {
         const userId = req.id;
         if (!userId) {
             res.status(406).json({
-                Message: "NO data Found for user!",
+                Message: "No data Found for user!",
             });
         }
         const userData = await User.findOne({ _id: userId });
