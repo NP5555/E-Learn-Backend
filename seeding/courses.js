@@ -94,7 +94,7 @@ const createCourses = async () => {
 
   try {
     // await Course.deleteMany({});
-    await User.updateOne({email: "hamid@5"}, {$push: {savedCourses: c2}});
+    await User.updateOne({email: "hamid@6"}, {$push: {savedCourses: c1}});
     // await Course.create(newCourse);
     console.log("Database seeded with courses");
     mongoose.connection.close();
