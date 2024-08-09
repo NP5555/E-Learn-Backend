@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
         { type: String},
     ],
     boughtCourses: [
-        { _id: { type: mongoose.Schema.Types.ObjectId, ref: "Course" } },
+        { type: string },
     ],
     noOfSavedCourses: { type: Number },
     noOfBoughtCourses: { type: Number },
