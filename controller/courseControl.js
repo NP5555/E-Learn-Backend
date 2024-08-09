@@ -27,6 +27,7 @@ exports.shortDetails = async (req, res) => {
       "data.rating": 1,
       "data.price": 1,
       "data.reviews": 1,
+      "data.image": 1
     };
     const shortData = await Course.find({}, projection);
     res.status(200).json(shortData);
@@ -39,22 +40,21 @@ exports.shortDetails = async (req, res) => {
 
 // Search by ID pr anyuthing we want!
 exports.searchByID = async (req, res) => {
-  // console.log(12323)
   try {
-    const id = parseInt(req.params.id); // Convert the id parameter to an integer
+    const id = req.params.id; // Convert the id parameter to an integer
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid id parameter" });
+    if (!id) {
+      return res.status(400).json({ message: "Invalid id!S" });
     }
-    const course = data.filter((course) => course.id === id); // Query for courses with id greater than the provided value
-    if (course.length < 1) {
-      return res.status(404).json({ msg: "CourseID not found" });
-    }
+    const course = await Course.findOne({ _id: id });
 
-    res.json(course);
+    res.json({
+      id: course._id,
+      data: course.data
+    });
   } catch (error) {
     console.error("Error fetching courses:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: error });
   }
 };
 
@@ -76,11 +76,11 @@ exports.search = async (req, res) => {
 
     const searchCriteria = query
       ? {
-          $or: [
-            { "data.title": { $regex: regex } },
-            { "data.category": { $regex: regex } },
-          ],
-        }
+        $or: [
+          { "data.title": { $regex: regex } },
+          { "data.category": { $regex: regex } },
+        ],
+      }
       : {};
 
     const courses = await Course.find(searchCriteria)
@@ -89,7 +89,9 @@ exports.search = async (req, res) => {
 
     const totalCount = await Course.countDocuments(searchCriteria);
 
-    const coursesToSend = courses.map((course) => course.data);
+    const coursesToSend = courses.map((course) => {
+      return { id: course._id, data: course.data.details }
+    });
 
     res.status(200).json({
       page: pageNumber,
@@ -121,6 +123,7 @@ exports.searchCategory = async (req, res) => {
       ],
     };
 
+
     searchCriteria.$and = searchCriteria.$and.filter(
       (criteria) => Object.keys(criteria).length > 0
     );
@@ -128,7 +131,9 @@ exports.searchCategory = async (req, res) => {
       .skip(skip)
       .limit(pageSize);
     const totalCount = await Course.countDocuments(searchCriteria);
-    const coursesToSend = courses.map((course) => course.data);
+    const coursesToSend = courses.map((course) => {
+      return { id: course._id, data: course.data.details }
+    });
 
     res.status(200).json({
       page: pageNumber,
@@ -137,6 +142,8 @@ exports.searchCategory = async (req, res) => {
       totalPages: Math.ceil(totalCount / pageSize),
       results: coursesToSend,
     });
+
+
   } catch (error) {
     res
       .status(500)
