@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const utils = require("../utils/utils");
 const nodemailer = require("nodemailer");
 const { SECRET_TOKEN } = require("../config/crypto");
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client(process.env.clientId);
 
 // Controller for user registeration
 exports.register = async (req, res) => {
@@ -190,3 +192,55 @@ exports.changePassword = async (req, res) => {
     });
   }
 };
+
+
+// google auth
+exports.googleAuth = async (req, res) => {
+  const { token } = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.clientId,
+    });
+
+    const payload = ticket.getPayload();
+    const userid = payload["sub"];
+    const email = payload["email"];
+    const name = payload["name"];
+
+    let user = await User.findOne({ email: email });
+
+    if (!user) {
+      user = new User({
+        email: email,
+        name: name,
+        password: userid,
+      });
+      await user.save();
+
+      const userToFind = await User.findOne({ email: email });
+      let payload1 = { id: userToFind._id };
+      const token = jwt.sign(payload1, SECRET_TOKEN);
+      res.cookie("token", token, {
+        httpOnly: true,
+        // maxAge: 60 * 60 * 1000
+      });
+      res.status(200).send({
+        message: "User successfully logged in",
+      });
+      return;
+    }
+    let payload1 = { id: user._id };
+    const token = jwt.sign(payload1, SECRET_TOKEN);
+    res.cookie("token", token, {
+      httpOnly: true,
+      // maxAge: 60 * 60 * 1000
+    });
+    res.status(200).send({
+      message: "User successfully logged in",
+    });
+  } catch (error) {
+    res.status(401).json({ message: error.message });
+  }
+};
+

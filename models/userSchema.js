@@ -18,8 +18,26 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  coursesBought: [],
+  savedCourses: [
+    { _id: { type: mongoose.Schema.Types.ObjectId, ref: "Course" } },
+  ],
+  boughtCourses: [
+    { _id: { type: mongoose.Schema.Types.ObjectId, ref: "Course" } },
+  ],
+  noOfSavedCourses: { type: Number },
+  noOfBoughtCourses: { type: Number },
+
   otp: { otp: { type: Number }, expireDate: { type: Number } },
 });
 
-module.exports = mongoose.model("AuthUser", userSchema);
+userSchema.pre("save", function (next) {
+  const savedCourses = this.savedCourses.length;
+  const boughtCourses = this.boughtCourses.length;
+
+  this.noOfSavedCourses = savedCourses;
+  this.boughtCourses = boughtCourses;
+
+  next();
+});
+
+module.exports = mongoose.model("AuthUSer", userSchema);
