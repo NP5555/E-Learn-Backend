@@ -150,3 +150,5 @@ exports.searchCategory = async (req, res) => {
       .json({ error: "Error fetching courses", msg: error.message });
   }
 };
+
+
