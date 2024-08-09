@@ -12,5 +12,6 @@ router.get("/serach/categories", courseControl.searchCategory);
 router.get("/saved", verifyUserToken, courseControl.getSavedCourse) 
 router.post("/saved", verifyUserToken, courseControl.addSaved) 
 router.delete("/saved", verifyUserToken, courseControl.deleteSaved) 
-
+router.post("/bought-courses", verifyUserToken, courseControl.buyCourse)
+router.delete("/deleteBuy-courses", verifyUserToken, courseControl.deleteBoughtCourse)
 module.exports = router;
