@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Mentor = require("../models/mentorScheme"); // Adjust the path as necessary
+const Mentor = require("../models/mentor"); // Adjust the path as necessary
 
 mongoose.connect("mongodb://localhost:27017/E-learning", {
   useNewUrlParser: true,

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
-const Course = require("../models/courseScheme"); // Adjust the path as necessary
-const Mentor = require("../models/mentorScheme"); // Adjust the path as necessary
+const User = require("../models/userSchema")
+const Course = require("../models/courseSchema"); // Adjust the path as necessary
+const Mentor = require("../models/mentorSchema"); // Adjust the path as necessary
 
 mongoose.connect("mongodb://localhost:27017/E-learning", {
   useNewUrlParser: true,
@@ -10,413 +11,90 @@ mongoose.connect("mongodb://localhost:27017/E-learning", {
 const createCourses = async () => {
   const mentorIds = await Mentor.find({});
 
-  const courses = [
+  const coursesData = [
     {
-      students: [],
+      students: [{ _id: "64d8f7d2f1a1a0f01b8e9c1a" }, { _id: "64d8f7d2f1a1a0f01b8e9c1b" }],
       data: {
-        category: "Programming",
-        title: "Introduction to JavaScript",
-        description:
-          "Learn the basics of JavaScript, the most popular programming language.",
-        price: 100,
-        rating: 4.5,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 10,
-        mentor: mentorIds[0],
-        lessons: [],
+        details: {
+          category: "Web Development",
+          title: "Full Stack Web Development",
+          price: 199.99,
+          rating: 4.8,
+          numOfReviews: 1500,
+          img: "https://example.com/fullstack.jpg",
+        },
+        duration: 40,
+        description: "Learn full stack web development with hands-on projects and real-world examples.",
+        reviews: [
+          { rating: 5, review: "Excellent course with in-depth coverage!", _id: "64d8f7d2f1a1a0f01b8e9c1c" },
+          { rating: 4, review: "Good content but could use more advanced projects.", _id: "64d8f7d2f1a1a0f01b8e9c1d" },
+        ],
+        lessons: [
+          { title: "Introduction to Web Development", desc: "Overview of web technologies and tools.", img: "https://example.com/lesson1.jpg" },
+          { title: "Frontend Development", desc: "Learning HTML, CSS, and JavaScript.", img: "https://example.com/lesson2.jpg" },
+          { title: "Backend Development", desc: "Building APIs with Node.js and Express.", img: "https://example.com/lesson3.jpg" },
+        ],
       },
     },
     {
-      students: [],
+      students: [{ _id: "64d8f7d2f1a1a0f01b8e9c1e" }, { _id: "64d8f7d2f1a1a0f01b8e9c1f" }],
       data: {
-        category: "Programming",
-        title: "Advanced JavaScript",
-        description: "Deep dive into advanced JavaScript concepts.",
-        price: 120,
-        rating: 4.7,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 15,
-        mentor: mentorIds[1],
-        lessons: [],
+        details: {
+          category: "Data Science",
+          title: "Data Science Masterclass",
+          price: 249.99,
+          rating: 4.9,
+          numOfReviews: 2000,
+          img: "https://example.com/datascience.jpg",
+        },
+        duration: 50,
+        description: "Master data science with practical projects and real-world datasets.",
+        reviews: [
+          { rating: 5, review: "In-depth and practical course.", _id: "64d8f7d2f1a1a0f01b8e9c20" },
+          { rating: 4, review: "Great content but a bit fast-paced.", _id: "64d8f7d2f1a1a0f01b8e9c21" },
+        ],
+        lessons: [
+          { title: "Introduction to Data Science", desc: "Overview of data science concepts.", img: "https://example.com/lesson4.jpg" },
+          { title: "Python for Data Science", desc: "Using Python for data analysis.", img: "https://example.com/lesson5.jpg" },
+          { title: "Machine Learning", desc: "Introduction to machine learning algorithms.", img: "https://example.com/lesson6.jpg" },
+        ],
       },
     },
     {
-      students: [],
+      students: [{ _id: "64d8f7d2f1a1a0f01b8e9c22" }],
       data: {
-        category: "Data Science",
-        title: "Introduction to Data Science",
-        description:
-          "Learn the fundamentals of data science and data analysis.",
-        price: 150,
-        rating: 4.6,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 20,
-        mentor: mentorIds[0],
-        lessons: [],
+        details: {
+          category: "Design",
+          title: "Graphic Design Basics",
+          price: 99.99,
+          rating: 4.6,
+          numOfReviews: 1200,
+          img: "https://example.com/graphicdesign.jpg",
+        },
+        duration: 30,
+        description: "Learn the basics of graphic design with Adobe Photoshop and Illustrator.",
+        reviews: [
+          { rating: 4, review: "Great for beginners!", _id: "64d8f7d2f1a1a0f01b8e9c23" },
+          { rating: 3, review: "Could have covered more tools.", _id: "64d8f7d2f1a1a0f01b8e9c24" },
+        ],
+        lessons: [
+          { title: "Introduction to Graphic Design", desc: "Basic principles of design.", img: "https://example.com/lesson7.jpg" },
+          { title: "Photoshop Basics", desc: "Learning Adobe Photoshop.", img: "https://example.com/lesson8.jpg" },
+          { title: "Illustrator Basics", desc: "Learning Adobe Illustrator.", img: "https://example.com/lesson9.jpg" },
+        ],
       },
     },
-    {
-      students: [],
-      data: {
-        category: "Data Science",
-        title: "Machine Learning Basics",
-        description:
-          "An introduction to machine learning algorithms and techniques.",
-        price: 200,
-        rating: 4.8,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 25,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Web Development",
-        title: "HTML & CSS for Beginners",
-        description: "Learn how to build websites with HTML and CSS.",
-        price: 80,
-        rating: 4.3,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 8,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Web Development",
-        title: "React.js Fundamentals",
-        description:
-          "Learn the basics of React.js for building dynamic web applications.",
-        price: 110,
-        rating: 4.5,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 12,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Web Development",
-        title: "Node.js Essentials",
-        description:
-          "Master the fundamentals of Node.js for backend development.",
-        price: 130,
-        rating: 4.6,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 14,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Mobile Development",
-        title: "Introduction to Android Development",
-        description: "Learn to build Android apps from scratch.",
-        price: 150,
-        rating: 4.4,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 18,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Mobile Development",
-        title: "iOS Development for Beginners",
-        description: "Get started with building iOS apps.",
-        price: 160,
-        rating: 4.7,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 20,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Design",
-        title: "Graphic Design Fundamentals",
-        description: "Learn the basics of graphic design.",
-        price: 90,
-        rating: 4.5,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 10,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Design",
-        title: "UI/UX Design Basics",
-        description:
-          "An introduction to user interface and user experience design.",
-        price: 100,
-        rating: 4.6,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 12,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Marketing",
-        title: "Digital Marketing Essentials",
-        description: "Learn the core concepts of digital marketing.",
-        price: 130,
-        rating: 4.7,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 15,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Marketing",
-        title: "Social Media Marketing",
-        description: "Master the art of marketing on social media platforms.",
-        price: 120,
-        rating: 4.4,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 14,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Photography",
-        title: "Photography Basics",
-        description: "Learn the essentials of photography.",
-        price: 70,
-        rating: 4.5,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 8,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Photography",
-        title: "Advanced Photography Techniques",
-        description: "Take your photography skills to the next level.",
-        price: 110,
-        rating: 4.8,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 12,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Business",
-        title: "Business Management 101",
-        description: "Learn the basics of managing a business.",
-        price: 140,
-        rating: 4.6,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 18,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Business",
-        title: "Entrepreneurship Fundamentals",
-        description:
-          "Get started with entrepreneurship and start your own business.",
-        price: 160,
-        rating: 4.7,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 20,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Health & Fitness",
-        title: "Yoga for Beginners",
-        description: "Learn the basics of yoga for a healthier lifestyle.",
-        price: 60,
-        rating: 4.3,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 8,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Health & Fitness",
-        title: "Nutrition and Diet Planning",
-        description: "Learn how to plan a healthy diet.",
-        price: 80,
-        rating: 4.5,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 10,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Health & Fitness",
-        title: "Fitness Training",
-        description:
-          "Get started with fitness training and improve your physical health.",
-        price: 90,
-        rating: 4.6,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 12,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Personal Development",
-        title: "Time Management",
-        description: "Learn how to manage your time effectively.",
-        price: 70,
-        rating: 4.4,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 10,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Personal Development",
-        title: "Public Speaking",
-        description: "Improve your public speaking skills.",
-        price: 90,
-        rating: 4.7,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 12,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Finance",
-        title: "Personal Finance Management",
-        description: "Learn how to manage your personal finances effectively.",
-        price: 110,
-        rating: 4.5,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 14,
-        mentor: mentorIds[1],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Finance",
-        title: "Investment Strategies",
-        description:
-          "Learn different investment strategies for better financial growth.",
-        price: 150,
-        rating: 4.6,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 18,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-    {
-      students: [],
-      data: {
-        category: "Language",
-        title: "Spanish for Beginners",
-        description: "Learn the basics of the Spanish language.",
-        price: 80,
-        rating: 4.4,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 10,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    },
-  ];
+  ]
+
+ 
+    const c1 ="66b5bd832cb47cb74a412948"
+    const c2 ="66b5bd832cb47cb74a41294c"
+  console.log(c1)
+  console.log(c2)
 
   try {
-    await Course.deleteMany({});
-    const newCourse = {
-      students: [],
-      data: {
-        category: "Programming",
-        title: "Introduction to JavaScript",
-        description:
-          "Learn the basics of JavaScript, the most popular programming language.",
-        price: 100,
-        rating: 4.5,
-        reviews: [],
-        numOfReviews: 0,
-        duration: 10,
-        mentor: mentorIds[0],
-        lessons: [],
-      },
-    };
-    await Course.deleteMany({});
-    await Course.insertMany(courses);
+    // await Course.deleteMany({});
+    await User.updateOne({email: "hamid@5"}, {$push: {savedCourses: c2}});
     // await Course.create(newCourse);
     console.log("Database seeded with courses");
     mongoose.connection.close();
