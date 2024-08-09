@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
         default: 0,
     },
     savedCourses: [
-        { _id: { type: mongoose.Schema.Types.ObjectId, ref: "Course" } },
+        { type: String},
     ],
     boughtCourses: [
         { _id: { type: mongoose.Schema.Types.ObjectId, ref: "Course" } },

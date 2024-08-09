@@ -1,6 +1,7 @@
 const data = require("../data");
 const Catagory = require("../models/catagoriesSchema");
 const Course = require("../models/courseSchema");
+const User = require("../models/userSchema")
 
 // /search/courses
 //todo fix the mess
@@ -152,3 +153,47 @@ exports.searchCategory = async (req, res) => {
 };
 
 
+exports.getSavedCourse = async (req, res) => {
+  try {
+    const userID = req.id;
+    const fetchUser = await User.findOne({ _id: userID })
+    const savedCourses = fetchUser.savedCourses;
+    const courses = await Course.find({ _id: { $in: savedCourses } })
+    const coursesToSend = courses.map((course) => {
+      return {
+        _id: course._id,
+        data: course.data.details
+      }
+    }
+    )
+    res.status(200).json(coursesToSend)
+
+
+  } catch (error) {
+
+  }
+}
+
+// TO add a new course in save
+exports.addSaved = async (req, res) => {
+  try {
+    const userId = req.id
+    const courseId = req.body.courseId;
+    const user = await User.updateOne({ _id: userId }, {$push: {savedCourses: courseId}});
+    res.status(200).json(user)
+  } catch (error) {
+    console.log("error id", error)
+  }
+}
+
+// To delete added course
+exports.deleteSaved = async (req, res) => {
+  try {
+    const userId = req.id
+    const courseId = req.body.courseId;
+    const user = await User.updateOne({ _id: userId }, {$pull: {savedCourses: courseId}});
+    res.status(200).json(user)
+  } catch (error) {
+    console.log("error id", error)
+  }
+}
