@@ -1,6 +1,6 @@
 const data = require("../data");
-const Catagory = require("../models/catagoriesScheme");
-const Course = require("../models/courseScheme");
+const Catagory = require("../models/catagoriesSchema");
+const Course = require("../models/courseSchema");
 
 // /search/courses
 //todo fix the mess
@@ -16,6 +16,25 @@ exports.searchApi = async (req, res, next) => {
     return isValid;
   });
   res.send(filteredUsers);
+};
+
+// Api for specific data
+exports.shortDetails = async (req, res) => {
+  try {
+    const projection = {
+      "data.title": 1,
+      "data.category": 1,
+      "data.rating": 1,
+      "data.price": 1,
+      "data.reviews": 1,
+    };
+    const shortData = await Course.find({}, projection);
+    res.status(200).json(shortData);
+  } catch (error) {
+    res.status(404).json({
+      error: error,
+    });
+  }
 };
 
 // Search by ID pr anyuthing we want!

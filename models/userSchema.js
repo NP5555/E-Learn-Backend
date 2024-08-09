@@ -22,4 +22,4 @@ const userSchema = new mongoose.Schema({
   otp: { otp: { type: Number }, expireDate: { type: Number } },
 });
 
-module.exports = mongoose.model("authUser", userSchema);
+module.exports = mongoose.model("AuthUser", userSchema);
