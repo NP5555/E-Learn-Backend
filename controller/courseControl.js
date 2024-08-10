@@ -22,12 +22,12 @@ exports.searchApi = async (req, res, next) => {
 exports.shortDetails = async (req, res) => {
   try {
     const projection = {
-      "data.title": 1,
-      "data.category": 1,
-      "data.rating": 1,
-      "data.price": 1,
-      "data.reviews": 1,
-      "data.image": 1,
+      "data.details.title": 1,
+      "data.details.category": 1,
+      "data.details.rating": 1,
+      "data.details.price": 1,
+      "data.details.reviews": 1,
+      "data.details.image": 1,
     };
     const shortData = await Course.find({}, projection);
     res.status(200).json(shortData);
@@ -84,11 +84,11 @@ exports.search = async (req, res) => {
 
     const searchCriteria = query
       ? {
-          $or: [
-            { "data.details.title": { $regex: regex } },
-            { "data.details.category": { $regex: regex } },
-          ],
-        }
+        $or: [
+          { "data.details.title": { $regex: regex } },
+          { "data.details.category": { $regex: regex } },
+        ],
+      }
       : {};
     let sortF;
     if (sortField === "price") {
@@ -225,7 +225,7 @@ exports.searchCategory = async (req, res) => {
 exports.getSavedCourse = async (req, res) => {
   try {
     const userID = req.id;
-    if (userID) {
+    if (!userID) {
       return res.status(404).json("User not found!")
     }
     const fetchUser = await User.findOne({ _id: userID })
@@ -324,11 +324,30 @@ exports.buyCourse = async (req, res) => {
   }
 }
 
+exports.getBoughtCourse = async (req, res) => {
+  try {
+    const userId = req.id;
+    const user = await User.findOne({ _id: userId }).populate("boughtCourses").exec();
+    const coursesToSend = user.boughtCourses.map((course) => {
+      return {
+        _id: course._id,
+        data: course.data.details
+      }
+    })
+    res.status(200).json(coursesToSend)
+  } catch (error) {
+    res.status(500).json({
+      error: error
+    })
+  }
+}
+
+
 
 exports.deleteBoughtCourse = async (req, res) => {
   try {
     const userId = req.id;
-    const courseId = req.body.courseId; 
+    const courseId = req.body.courseId;
     if (!courseId) {
       return res.status(404).json({ message: "Course id not found!" });
     }
