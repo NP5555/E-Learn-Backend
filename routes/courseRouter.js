@@ -4,7 +4,7 @@ const { verifyUserToken } = require('../middleware/authUser');
 
 
 router.get("/courses",verifyUserToken, courseControl.searchApi),
-router.get("/short-details",verifyUserToken, courseControl.shortDetails),
+router.get("/featured",verifyUserToken, courseControl.featured),
 router.get("/searchById/:id",verifyUserToken, courseControl.searchByID),
 router.get("/catagories",verifyUserToken, courseControl.catagories);
 router.get("/search",verifyUserToken, courseControl.search);
