@@ -12,6 +12,11 @@ const courseSchema = new mongoose.Schema({
       numOfReviews: { type: Number, required: true },
       img: { type: String, required: true },
     },
+    mentor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Mentor",
+      required: true,
+    },
     duration: { type: Number, required: true },
     description: { type: String, required: true },
     reviews: [
@@ -25,6 +30,8 @@ const courseSchema = new mongoose.Schema({
       {
         title: { type: String },
         desc: { type: String },
+        duration: {type: Number},
+        link: {type: String},
         img: { type: String },
       },
     ],

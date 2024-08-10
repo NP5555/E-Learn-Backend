@@ -4,7 +4,14 @@ const mentorSchema = new mongoose.Schema({
   name: { type: String, required: true },
   image: { type: String },
   about: { type: String },
-  reviews: [{ type: String }],
+  title: {type: String},
+  reviews: [
+    {
+      rating: { type: Number },
+      review: { type: String },
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    },
+  ],
   courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
   numOFReviews: { type: Number },
   numOfCourses: { type: Number },
