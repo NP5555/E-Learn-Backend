@@ -342,8 +342,6 @@ exports.getBoughtCourse = async (req, res) => {
   }
 }
 
-
-
 exports.deleteBoughtCourse = async (req, res) => {
   try {
     const userId = req.id;
