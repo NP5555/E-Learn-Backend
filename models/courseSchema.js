@@ -2,7 +2,7 @@ const { request } = require("express");
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
-  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "AuthUSer" }],
   data: {
     details: {
       category: { type: String, required: true },
@@ -23,7 +23,7 @@ const courseSchema = new mongoose.Schema({
       {
         rating: { type: Number },
         review: { type: String },
-        _id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "AuthUSer" },
       },
     ],
     lessons: [

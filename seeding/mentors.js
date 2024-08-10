@@ -1901,8 +1901,8 @@ function genRandom(lowLimit, highLimit) {
 
 const seedMentors = async () => {
   try {
-    // await Catagorie.deleteMany({});
-    // const insertedCategories = await Catagorie.insertMany(categories);
+    await Catagorie.deleteMany({});
+    const insertedCategories = await Catagorie.insertMany(categories);
 
     for (let o = 0; o < mentorsData.length; o++) {
       mentorsData[o].reviews = mentorReviews[o];
@@ -2102,6 +2102,23 @@ const seedMentors = async () => {
         const f = await Course.updateOne({_id: id}, {$push: {students: user._id}})
       })
     })
+    const userIds = savedUsers.map((user) => user._id)
+    coursesInDb.forEach( async (course) => {
+      course.data.reviews.forEach(async (review, index) => {
+          review.user = userIds[genRandom(0, userIds.length)]
+      })
+      const h = await course.save()
+    })
+
+    mentors.forEach(async(mentor) => {
+      mentor.reviews.forEach((review) => {
+        review.user = userIds[genRandom(0, userIds.length)]
+      })
+      const h = await mentor.save()
+
+    })
+
+
 
     
  
@@ -2159,6 +2176,14 @@ use.forEach(async (men) => {
 const all = async () => {
  await seedMentors();
  await kkk()
+
+// // //  const cou = await Mentor.findOne({_id: "66b6e2a3c3681c55c9c625f2"}).populate("courses").exec()
+//  const cou = await Course.findOne({_id: "66b6e967a5f1da32acd5d508"}).populate("data.reviews._id").exec()
+//  let arr = []
+//  arr.push(cou)
+//  fs.writeFileSync("new.js", JSON.stringify(arr))
+
+//  console.log(cou)
 }
 
 all()

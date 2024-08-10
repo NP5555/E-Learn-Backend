@@ -9,7 +9,7 @@ const mentorSchema = new mongoose.Schema({
     {
       rating: { type: Number },
       review: { type: String },
-      _id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
   ],
   courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
