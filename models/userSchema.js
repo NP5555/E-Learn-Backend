@@ -19,9 +19,11 @@ const userSchema = new mongoose.Schema({
         default: 0,
     },
     savedCourses: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
         { type: mongoose.Schema.Types.ObjectId, ref: "Course"},
     ],
     boughtCourses: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
         { type: mongoose.Schema.Types.ObjectId, ref: "Course"},
     ],
     noOfSavedCourses: { type: Number },
@@ -32,9 +34,11 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre("save", function (next) {
     const savedCourses = this.savedCourses.length;
+    const numOfBoughtCourses = this.boughtCourses.length;
     const noOfBoughtCourses = this.boughtCourses.length;
 
     this.noOfSavedCourses = savedCourses;
+    this.noOfBoughtCourses = numOfBoughtCourses;
     this.noOfBoughtCourses = noOfBoughtCourses;
 
     next();
