@@ -3,6 +3,7 @@ const Mentor = require("../models/mentorSchema");
 const Catagorie = require("../models/catagoriesSchema");
 const Course = require("../models/courseSchema");
 const User = require("../models/userSchema");
+const bcrypt = require('bcrypt')
 const fs = require("fs");
 
 mongoose.connect("mongodb://localhost:27017/E-learning", {
@@ -2087,7 +2088,7 @@ const seedMentors = async () => {
       const user = new User({
         name: `user-${i}`,
         email: `user-${i}@g`,
-        password: "1234",
+        password: await bcrypt.hash('1234', 10),
         savedCourses: genRandomCourses(flatCourseId, genRandom(6, 12)),
         boughtCourses: genRandomCourses(flatCourseId, genRandom(6, 12)),
       });
