@@ -13,11 +13,10 @@ router.get("/saved", verifyUserToken, courseControl.getSavedCourse)
 router.post("/saved", verifyUserToken, courseControl.addSaved) 
 router.delete("/saved", verifyUserToken, courseControl.deleteSaved) 
 router.post("/bought-courses", verifyUserToken, courseControl.buyCourse)
-router.delete("/deleteBuy-courses", verifyUserToken, courseControl.deleteBoughtCourse)
-router.post('/reviews', verifyUserToken, courseControl.addReview)
-router.delete('/reviews', verifyUserToken, courseControl.deleteReview)
 router.get("/bought-courses", verifyUserToken, courseControl.getBoughtCourse)
 router.delete("/bought-courses", verifyUserToken, courseControl.deleteBoughtCourse)
+router.post('/reviews', verifyUserToken, courseControl.addReview)
+router.delete('/reviews', verifyUserToken, courseControl.deleteReview)
 
 
 
