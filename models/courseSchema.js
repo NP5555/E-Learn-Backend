@@ -2,7 +2,7 @@ const { request } = require("express");
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
-  students: [ { type: mongoose.Schema.Types.ObjectId, ref: "User" } ],
+  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   data: {
     details: {
       category: { type: String, required: true },
@@ -30,8 +30,8 @@ const courseSchema = new mongoose.Schema({
       {
         title: { type: String },
         desc: { type: String },
-        duration: {type: Number},
-        link: {type: String},
+        duration: { type: Number },
+        link: { type: String },
         img: { type: String },
       },
     ],
@@ -45,6 +45,8 @@ courseSchema.pre("save", function (next) {
     rating += this.data.reviews[i].rating;
   }
   rating = rating / this.data.reviews.length;
+  rating = rating > 5 ? 5 : rating
+  rating = rating < 0 ? 0 : rating
   this.data.details.numOfReviews = reviewNum;
   this.data.rating = rating;
 
