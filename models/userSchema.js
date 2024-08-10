@@ -19,10 +19,10 @@ const userSchema = new mongoose.Schema({
         default: 0,
     },
     savedCourses: [
-        { type: String},
+        { type: String },
     ],
     boughtCourses: [
-        { type: string },
+        { type: String }
     ],
     noOfSavedCourses: { type: Number },
     noOfBoughtCourses: { type: Number },
