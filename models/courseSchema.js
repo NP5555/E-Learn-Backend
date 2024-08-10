@@ -22,7 +22,7 @@ const courseSchema = new mongoose.Schema({
       {
         rating: { type: Number },
         review: { type: String },
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "AuthUSer" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "AuthUser" },
       },
     ],
     lessons: [
