@@ -328,7 +328,25 @@ exports.buyCourse = async (req, res) => {
       error: error,
     });
   }
-};
+}
+
+exports.getBoughtCourse = async (req, res) => {
+  try {
+    const userId = req.id;
+    const user = await User.findOne({ _id: userId }).populate("boughtCourses").exec();
+    const coursesToSend = user.boughtCourses.map((course) => {
+      return {
+        _id: course._id,
+        data: course.data.details
+      }
+    })
+    res.status(200).json(coursesToSend)
+  } catch (error) {
+    res.status(500).json({
+      error: error
+    })
+  }
+}
 
 exports.deleteBoughtCourse = async (req, res) => {
   try {
