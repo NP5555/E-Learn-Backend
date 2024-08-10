@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
-  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "AuthUSer" }],
+  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "AuthUser" }],
   data: {
     details: {
       category: { type: String, required: true },
