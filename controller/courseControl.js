@@ -225,7 +225,7 @@ exports.buyCourse = async (req, res) => {
     const courseId = req.body.courseId;
     const { cardNumber, cardName, ExData, CVV } = req.body;
     if (!cardNumber || !cardName || !ExData || !CVV) {
-      return res.status(502).json({
+      return res.status(400).json({
         message: "Fill all details please!"
       })
     }
