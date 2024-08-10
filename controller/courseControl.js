@@ -243,27 +243,85 @@ exports.addSaved = async (req, res) => {
   try {
     const userId = req.id;
     const courseId = req.body.courseId;
-    const user = await User.updateOne(
-      { _id: userId },
-      { $push: { savedCourses: courseId } }
-    );
-    res.status(200).json(user);
+    const user = await User.findOne({ _id: userId })
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.savedCourses.push(courseId);
+    const savedUser = await user.save();
+    res.status(200).json({
+      Message: "Course added successfully!",
+    })
   } catch (error) {
-    console.log("error id", error);
+    res.status(408).json({
+      error: error
+    })
   }
 };
 
 // To delete added course
 exports.deleteSaved = async (req, res) => {
   try {
+    const userId = req.id
+    const courseId = req.body.courseId;
+    const user = await User.findOne({ _id: userId })
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.savedCourses.pull(courseId);
+    const updatedUser = await user.save();
+    res.status(200).json({
+      Message: "Course deleted successfully!",
+    })
+  } catch (error) {
+    res.status(408).json({
+      error: error
+    })
+  }
+}
+
+// To buy a new course
+exports.buyCourse = async (req, res) => {
+  try {
     const userId = req.id;
     const courseId = req.body.courseId;
-    const user = await User.updateOne(
-      { _id: userId },
-      { $pull: { savedCourses: courseId } }
-    );
-    res.status(200).json(user);
+    const { cardNumber, cardName, ExData, CVV } = req.body;
+    if (!cardNumber || !cardName || !ExData || !CVV) {
+      return res.status(400).json({
+        message: "Fill all details please!"
+      })
+    }
+    const user = await User.findOne({ _id: userId })
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" })
+    }
+    user.boughtCourses.push(courseId);
+    const deleteCourse = await user.save();
+    res.status(200).json({
+      message: "Buy Course successfully!",
+    })
   } catch (error) {
-    console.log("error id", error);
+    res.status(501).json({
+      error: error
+    })
+  }
+}
+
+
+exports.deleteBoughtCourse = async (req, res) => {
+  try {
+    const userId = req.id;
+    const courseId = req.body.courseId; 
+    const user = await User.findOne({ _id: userId })
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" })
+    }
+    user.boughtCourses.pull(courseId);
+    const boughtCourseList = await user.save();
+    res.status(200).json({
+      message: "Delete bought course successfully!",
+    })
+  } catch (error) {
+    
   }
 };
