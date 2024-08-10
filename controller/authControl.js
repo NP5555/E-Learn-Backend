@@ -166,7 +166,6 @@ exports.deleteUser = async (req, res) => {
 
     const delUser = await User.deleteOne({ _id: userId });
     if (!delUser) {
-      console.log(1);
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({
@@ -185,7 +184,6 @@ exports.changePassword = async (req, res) => {
 
     // To find the user
     const fetchUser = await User.findOne({ _id: userID });
-    console.log("Fetched User's password is", fetchUser.password);
 
     // Comparing passwords
     const isMatch = await bcrypt.compare(oldPassword, fetchUser.password);
