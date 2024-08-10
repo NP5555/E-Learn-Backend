@@ -225,27 +225,38 @@ exports.searchCategory = async (req, res) => {
 exports.getSavedCourse = async (req, res) => {
   try {
     const userID = req.id;
-    const fetchUser = await User.findOne({ _id: userID });
+    if (userID) {
+      return res.status(404).json("User not found!")
+    }
+    const fetchUser = await User.findOne({ _id: userID })
     const savedCourses = fetchUser.savedCourses;
     const courses = await Course.find({ _id: { $in: savedCourses } });
     const coursesToSend = courses.map((course) => {
       return {
         _id: course._id,
-        data: course.data.details,
-      };
-    });
-    res.status(200).json(coursesToSend);
-  } catch (error) {}
-};
+        data: course.data.details
+      }
+    }
+    )
+    res.status(200).json(coursesToSend)
+  } catch (error) {
+    res.status(408).json({
+      error: error
+    })
+  }
+}
 
 // TO add a new course in save
 exports.addSaved = async (req, res) => {
   try {
-    const userId = req.id;
-    const courseId = req.body.courseId;
+    const userId = req.id
     const user = await User.findOne({ _id: userId })
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+    const courseId = req.body.courseId;
+    if (!courseId) {
+      return res.status(400).json("Course id not found!")
     }
     user.savedCourses.push(courseId);
     const savedUser = await user.save();
@@ -263,10 +274,13 @@ exports.addSaved = async (req, res) => {
 exports.deleteSaved = async (req, res) => {
   try {
     const userId = req.id
-    const courseId = req.body.courseId;
     const user = await User.findOne({ _id: userId })
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+    const courseId = req.body.courseId;
+    if (!courseId) {
+      return res.status(400).json("Course id not found!")
     }
     user.savedCourses.pull(courseId);
     const updatedUser = await user.save();
@@ -285,6 +299,9 @@ exports.buyCourse = async (req, res) => {
   try {
     const userId = req.id;
     const courseId = req.body.courseId;
+    if (!courseId) {
+      return res.status(400).json("Course id not found!")
+    }
     const { cardNumber, cardName, ExData, CVV } = req.body;
     if (!cardNumber || !cardName || !ExData || !CVV) {
       return res.status(400).json({
@@ -312,6 +329,9 @@ exports.deleteBoughtCourse = async (req, res) => {
   try {
     const userId = req.id;
     const courseId = req.body.courseId; 
+    if (!courseId) {
+      return res.status(404).json({ message: "Course id not found!" });
+    }
     const user = await User.findOne({ _id: userId })
     if (!user) {
       return res.status(404).json({ message: "User not found!" })
@@ -322,6 +342,8 @@ exports.deleteBoughtCourse = async (req, res) => {
       message: "Delete bought course successfully!",
     })
   } catch (error) {
-    
+    res.status(408).json({
+      error: error
+    })
   }
 };
