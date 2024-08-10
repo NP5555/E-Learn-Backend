@@ -33,18 +33,10 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", function (next) {
     const savedCourses = this.savedCourses.length;
     const numOfBoughtCourses = this.boughtCourses.length;
-<<<<<<< HEAD
     
-
     this.noOfSavedCourses = savedCourses;
     this.noOfBoughtCourses = numOfBoughtCourses;
    
-=======
-
-    this.noOfSavedCourses = savedCourses;
-    this.noOfBoughtCourses = numOfBoughtCourses;
-
->>>>>>> 9bef7b86fa654f35ec5e80a1aa1acc7e8a9edb16
 
     next();
 });

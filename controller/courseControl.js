@@ -334,7 +334,6 @@ exports.deleteBoughtCourse = async (req, res) => {
   try {
     const userId = req.id;
     const courseId = req.body.courseId;
-    const courseId = req.body.courseId;
     if (!courseId) {
       return res.status(404).json({ message: "Course id not found!" });
     }
