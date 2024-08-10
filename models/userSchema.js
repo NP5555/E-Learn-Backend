@@ -19,10 +19,10 @@ const userSchema = new mongoose.Schema({
         default: 0,
     },
     savedCourses: [
-        { type: String},
+        { type: mongoose.Schema.Types.ObjectId, ref: "Course"},
     ],
     boughtCourses: [
-        { type: String},
+        { type: mongoose.Schema.Types.ObjectId, ref: "Course"},
     ],
     noOfSavedCourses: { type: Number },
     noOfBoughtCourses: { type: Number },

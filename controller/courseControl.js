@@ -187,7 +187,6 @@ exports.addSaved = async (req, res) => {
     const savedUser = await user.save();
     res.status(200).json({
       Message: "Course added successfully!",
-      User: savedUser
     })
   } catch (error) {
     res.status(408).json({
@@ -209,7 +208,6 @@ exports.deleteSaved = async (req, res) => {
     const updatedUser = await user.save();
     res.status(200).json({
       Message: "Course deleted successfully!",
-      User: updatedUser
     })
   } catch (error) {
     res.status(408).json({
@@ -236,8 +234,7 @@ exports.buyCourse = async (req, res) => {
     user.boughtCourses.push(courseId);
     const deleteCourse = await user.save();
     res.status(200).json({
-      message: "Delete bought course successfully!",
-      user: deleteCourse
+      message: "Buy Course successfully!",
     })
   } catch (error) {
     res.status(501).json({
@@ -258,8 +255,7 @@ exports.deleteBoughtCourse = async (req, res) => {
     user.boughtCourses.pull(courseId);
     const boughtCourseList = await user.save();
     res.status(200).json({
-      message: "Bought course added successfully!",
-      user: boughtCourseList
+      message: "Delete bought course successfully!",
     })
   } catch (error) {
     
