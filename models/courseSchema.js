@@ -2,7 +2,7 @@ const { request } = require("express");
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
-  students: [{ _id: { type: mongoose.Schema.Types.ObjectId, ref: "User" } }],
+  students: [ { type: mongoose.Schema.Types.ObjectId, ref: "User" } ],
   data: {
     details: {
       category: { type: String, required: true },

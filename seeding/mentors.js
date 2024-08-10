@@ -132,7 +132,7 @@ const mentorsData = [
           "Robert has been an instrumental figure in my professional growth. which really helped me gain confidence in my coding abilities. His extensive industry experience adds great value to his teaching, and I have learned a lot from his real-world examples.",
       },
     ],
-    courses: [,],
+    courses: [],
     numOFReviews: 1,
     numOfCourses: 2,
     socialMedia: [
@@ -2080,13 +2080,31 @@ const seedMentors = async () => {
         }
       });
     });
+    await User.deleteMany({});
+    const flatCourseId = courseId.flat();
+
+    for (let i = 0; i < 30; i++) {
+      const user = new User({
+        name: `user-${i}`,
+        email: `user-${i}@g`,
+        password: "1234",
+        savedCourses: genRandomCourses(flatCourseId, genRandom(6, 12)),
+        boughtCourses: genRandomCourses(flatCourseId, genRandom(6, 12)),
+      });
+      const x = await user.save();
+    }
+
+    const savedUsers = await User.find()
+
+    savedUsers.forEach((user) => {
+      user.boughtCourses.forEach( async (bc) => {
+        const id = new mongoose.Types.ObjectId(bc)
+        const f = await Course.updateOne({_id: id}, {$push: {students: user._id}})
+      })
+    })
 
     
-
-
-
-
-
+ 
 
 
     // fs.writeFileSync("new2.js", JSON.stringify(courses), {
@@ -2095,12 +2113,56 @@ const seedMentors = async () => {
 
     console.log("Database seeded ");
     // mongoose.connection.close();
+    // check()
   } catch (error) {
     console.error("Error seeding database:", error);
   }
 };
 
-seedMentors();
+const genRandomCourses = (courses, num) => {
+  let limit = num;
+  let ranCourses = [];
+  for (let i = 0; i < limit; i++) {
+    ranCourses.push(courses[genRandom(0, courses.length)]);
+  }
+  return ranCourses;
+};
+
+const check = async () => {
+  const i = await Mentor.find();
+  i.forEach((o) => {
+    console.log(o.courses.length);
+  });
+};
+
+
+
+const kkk = async () => {
+  const mento = await Mentor.find({})
+  const cour = await Course.find({})
+  const use = await User.find({})
+
+mento.forEach(async (men) => {
+  const u = await men.save();
+});
+cour.forEach(async (men) => {
+  const u = await men.save();
+});
+use.forEach(async (men) => {
+  const u = await men.save();
+});
+
+}
+
+
+
+const all = async () => {
+ await seedMentors();
+ await kkk()
+}
+
+all()
+
 
 // const y = async () => {
 //   try {
@@ -2115,9 +2177,6 @@ seedMentors();
 
 //     const y = await mentor.save()
 
-
-
-    
 //     return // Optionally return the populated course document
 
 //   } catch (err) {
