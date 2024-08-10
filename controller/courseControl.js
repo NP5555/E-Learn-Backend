@@ -91,11 +91,11 @@ exports.search = async (req, res) => {
 
     const searchCriteria = query
       ? {
-          $or: [
-            { "data.details.title": { $regex: regex } },
-            { "data.details.category": { $regex: regex } },
-          ],
-        }
+        $or: [
+          { "data.details.title": { $regex: regex } },
+          { "data.details.category": { $regex: regex } },
+        ],
+      }
       : {};
     let sortF;
     if (sortField === "price") {
@@ -333,6 +333,7 @@ exports.buyCourse = async (req, res) => {
 exports.deleteBoughtCourse = async (req, res) => {
   try {
     const userId = req.id;
+    const courseId = req.body.courseId;
     const courseId = req.body.courseId;
     if (!courseId) {
       return res.status(404).json({ message: "Course id not found!" });
