@@ -2,24 +2,10 @@ const Catagory = require("../models/catagoriesSchema");
 const Course = require("../models/courseSchema");
 const Mentor = require("../models/mentorSchema")
 const User = require("../models/userSchema");
+const Video = require("../models/videoSchema");
 
-// /search/courses
-//todo fix the mess
-exports.searchApi = async (req, res, next) => {
-  const filters = req.query;
-  const filteredUsers = data.filter((user) => {
-    let isValid = true;
 
-    for (key in filters) {
-      console.log(key, user[key], filters[key]);
-      isValid = isValid && user[key] == filters[key];
-    }
-    return isValid;
-  });
-  res.send(filteredUsers);
-};
-
-// Api for specific data
+// Api for featured data
 exports.featured = async (req, res) => {
   try {
     const categories = await Course.aggregate([
@@ -43,17 +29,15 @@ exports.featured = async (req, res) => {
 
 // Search by ID pr anyuthing we want!
 exports.searchByID = async (req, res) => {
-  console.log(122)
   try {
-    const id = req.params.id; // Convert the id parameter to an integer
+    const id = req.params.id;
 
     if (!id) {
       return res.status(400).json({ message: "Invalid id!S" });
     }
-    const course = await Course.findOne({ _id: id });
+    const course = await Course.findOne({ _id: id }).populate({path: "data.reviews.user", select: "name email"});
+    if(!course) return res.status(400).json({msg: "course not found"})
     const mentor = await Mentor.findOne({_id: course.data.mentor})
-    console.log(mentor)
-
     res.json({
       id: course._id,
       data: course.data,
@@ -65,10 +49,22 @@ exports.searchByID = async (req, res) => {
   }
 };
 
+exports.searchByIDdetails = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const course = await Course.findOne({ _id: id })
+    if(!course) return res.status(400).json({msg: "course not found"})
+    const resp = {id: course._id, data: course.data.details}
+  res.status(200).json(resp)
+  } catch (error) {
+    res.status(500).json({ message: error });
+    
+  }
+}
+
 // search/catagories
 exports.catagories = async (req, res) => {
   const catagories = await Catagory.find();
-
   res.status(200).send(catagories.map((cate) => cate.name));
 };
 
@@ -156,7 +152,7 @@ exports.searchCategory = async (req, res) => {
       query = "",
       page = 1,
       limit = 10,
-      category = "",
+      categories = "", // Note the change from category to categories
       sortField = "",
       sortOrder = "asc",
     } = req.query;
@@ -165,10 +161,13 @@ exports.searchCategory = async (req, res) => {
     const skip = (pageNumber - 1) * pageSize;
     const regexQuery = query ? new RegExp(query, "i") : new RegExp("");
 
+    // Parse categories from query
+    const categoryArray = categories ? categories.split(",") : [];
+
     const searchCriteria = {
       $and: [
-        category
-          ? { "data.details.category": { $regex: category, $options: "i" } }
+        categoryArray.length > 0
+          ? { "data.details.category": { $in: categoryArray.map(c => new RegExp(c, "i")) } }
           : {},
         query ? { "data.details.title": { $regex: regexQuery } } : {},
       ],
@@ -206,11 +205,14 @@ exports.searchCategory = async (req, res) => {
     searchCriteria.$and = searchCriteria.$and.filter(
       (criteria) => Object.keys(criteria).length > 0
     );
+
     const courses = await Course.find(searchCriteria)
       .sort(sortCriteria)
       .skip(skip)
       .limit(pageSize);
+
     const totalCount = await Course.countDocuments(searchCriteria);
+
     const coursesToSend = courses.map((course) => {
       return { id: course._id, data: course.data.details };
     });
@@ -232,12 +234,13 @@ exports.searchCategory = async (req, res) => {
 exports.getSavedCourse = async (req, res) => {
   try {
     const userID = req.id;
-    if (userID) {
+    if (!userID) {
       return res.status(404).json("User not found!");
     }
     const fetchUser = await User.findOne({ _id: userID });
     const savedCourses = fetchUser.savedCourses;
     const courses = await Course.find({ _id: { $in: savedCourses } });
+    if(courses.length < 1) return res.status(404).json({msg: "no saved courses"})
     const coursesToSend = courses.map((course) => {
       return {
         _id: course._id,
@@ -260,17 +263,17 @@ exports.addSaved = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const courseId = req.body.courseId;
-    if (!courseId) {
-      return res.status(400).json("Course id not found!");
-    }
+    const {courseId} = req.params;
+    const course = Course.findOne({_id: courseId})
+    if(!course) return res.status(404).json({msg: "course not found"})
+    if(user.savedCourses.includes(courseId)) return res.status(400).json({msg: "course already saved"})
     user.savedCourses.push(courseId);
     const savedUser = await user.save();
     res.status(200).json({
       Message: "Course added successfully!",
     });
   } catch (error) {
-    res.status(408).json({
+    res.status(500).json({
       error: error,
     });
   }
@@ -284,7 +287,7 @@ exports.deleteSaved = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const courseId = req.body.courseId;
+    const {courseId} = req.params;
     if (!courseId) {
       return res.status(400).json("Course id not found!");
     }
@@ -304,7 +307,9 @@ exports.deleteSaved = async (req, res) => {
 exports.buyCourse = async (req, res) => {
   try {
     const userId = req.id;
-    const courseId = req.body.courseId;
+    const {courseId} = req.params;
+    const course = Course.findOne({_id: courseId})
+    if(!course) return res.status(404).json({msg: "course not found"})
     if (!courseId) {
       return res.status(400).json("Course id not found!");
     }
@@ -318,6 +323,7 @@ exports.buyCourse = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found!" });
     }
+    if(user.boughtCourses.includes(courseId)) return res.status(400).json({msg: "course already bought"})
     user.boughtCourses.push(courseId);
     const deleteCourse = await user.save();
     res.status(200).json({
@@ -332,14 +338,31 @@ exports.buyCourse = async (req, res) => {
 
 exports.getBoughtCourse = async (req, res) => {
   try {
-    const userId = req.id;
+   
+    const userId = req.id
     const user = await User.findOne({ _id: userId }).populate("boughtCourses").exec();
+    const completed = user.completed
     const coursesToSend = user.boughtCourses.map((course) => {
+    const lessons = course.data.lessons
+    let total = lessons.length
+    let done = 0
+  
+    lessons.forEach((lesson) => {
+      if(completed.includes(lesson._id)) {
+        done += 1
+      }
+
+    }) 
+    const progress = `${(done / total) * 100}%`
+
       return {
         _id: course._id,
-        data: course.data.details
+        data: course.data.details,
+        completed: `${done}/${total}`,
+        progress: progress,
       }
     })
+    if(coursesToSend.length < 1) return res.status(404).json({msg: "no bought courses"})
     res.status(200).json(coursesToSend)
   } catch (error) {
     res.status(500).json({
@@ -351,7 +374,7 @@ exports.getBoughtCourse = async (req, res) => {
 exports.deleteBoughtCourse = async (req, res) => {
   try {
     const userId = req.id;
-    const courseId = req.body.courseId;
+    const {courseId} = req.params;
     if (!courseId) {
       return res.status(404).json({ message: "Course id not found!" });
     }
@@ -374,11 +397,15 @@ exports.deleteBoughtCourse = async (req, res) => {
 exports.addReview = async (req, res) => {
   try {
     const userId = req.id
-  const {rating, review, courseId} = req.body
-  if(!rating || !review || !courseId) {
+  const {rating, review} = req.body
+  const {courseId} = req.params
+  if(!rating || !courseId) {
     return res.status(400).json({msg: "please privied all details"})
   }
   const course = await Course.findOne({_id: courseId})
+  if(!course) return res.status(404).json({msg: "course not found"})
+  const reviewIds = course.data.reviews.map((review) => review.user) 
+  course.data.reviews = course.data.reviews.filter(review => !review.user.equals(userId));
   const newReview = {rating: rating, review: review, user: userId}
   course.data.reviews.push(newReview)
   const x = await course.save()
@@ -394,10 +421,11 @@ exports.addReview = async (req, res) => {
 exports.deleteReview = async (req, res) => {
   try {
     const userId = req.id
-  const {courseId} = req.body
+  const {courseId} = req.params
+  if(!courseId) return res.status(400).json({msg: "please send course Id"})
   const course = await Course.findOne({_id: courseId})
-  course.data.reviews = course.data.reviews.filter((review) => review.user === userId)
-  console.log(course.data.reviews)
+  if(!course) return res.status(404).json({msg: "course not found"})
+  course.data.reviews = course.data.reviews.filter(review => !review.user.equals(userId));
   const x = await course.save()
   res.status(201).json({msg: "review deleted"})
   } catch (error) {
@@ -405,6 +433,85 @@ exports.deleteReview = async (req, res) => {
 
   }
 }
+
+exports.getReviews = async (req, res) => {
+  try {
+  const {courseId} = req.params
+  if(!courseId) return res.status(400).json({msg: "please send course Id"})
+  const course = await Course.findOne({_id: courseId}).populate({path: "data.reviews.user", select: "name email"})
+  if(!course) return res.status(404).json({msg: "course not found"})
+  if(course.data.reviews.length < 1) return rs.status(404).json({msg: "no reviews"})
+  res.status(202).json(course.data.reviews)
+  } catch (error) {
+    res.status(500).json({msg: error.message})
+
+  }
+}
+
+exports.getLessons = async (req, res) => {
+  try {
+  const {courseId} = req.params
+  if(!courseId) return res.status(400).json({msg: "please send course Id"})
+  const course = await Course.findOne({_id: courseId})
+  if(!course) return res.status(404).json({msg: "course not found"})
+  res.status(202).json(course.data.lessons)
+  } catch (error) {
+    res.status(500).json({msg: error.message})
+
+  }
+}
+
+exports.markDone = async (req, res) => {
+  try {
+    const userId = req.id
+  const {courseId, lessonId} = req.params
+  const course = await Course.findOne({_id: courseId})
+  if(!course) return res.status(404).json({msg: "course not found"})
+  const user = await User.findOne({_id: userId})
+  if(!user.boughtCourses.includes(courseId))return res.status(404).json({msg: "buy the course"})
+  if(user.completed.includes(lessonId)) return res.status(404).json({msg: "already marked"})
+  user.completed.push(lessonId)
+  await user.save()
+  res.status(202).json({msg: "lesson marked done"})
+  } catch (error) {
+    res.status(500).json({msg: error.message})
+
+  }
+}
+
+exports.markUnDone = async (req, res) => {
+  try {
+    const userId = req.id
+  const {courseId, lessonId} = req.params
+  const course = await Course.findOne({_id: courseId})
+  if(!course) return res.status(404).json({msg: "course not found"})
+  const user = await User.findOne({_id: userId})
+  user.completed = user.completed.filter((lesson) => !lesson.equals(lessonId))
+  await user.save()
+  res.status(202).json({msg: "lesson marked undone"})
+  } catch (error) {
+    res.status(500).json({msg: error.message})
+
+  }
+}
+
+
+exports.getVideo = async (req, res) => {
+  try {
+    const userId = "66b97fe14505fa4d3a9793ce"
+    const {courseId, videoId} = req.params
+    const course = await Course.findOne({_id: courseId})
+    if(!course) return res.status(404).json({msg: "course not found"})
+    const user = await User.findOne({_id: userId})
+    if(!user.boughtCourses.includes(courseId)) return res.status(403).json({msg: "buy the course"})
+    const video = await Video.findOne({_id: videoId})
+    res.status(200).json({link: video.link})
+  } catch (error) {
+    res.status(500).json({msg: error.message})
+
+  }
+}
+
 
 
 
