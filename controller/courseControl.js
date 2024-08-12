@@ -28,7 +28,7 @@ exports.featured = async (req, res) => {
 // Search by ID pr anyuthing we want!
 exports.searchByID = async (req, res) => {
   try {
-    const id = req.params.id; // Convert the id parameter to an integer
+    const id = req.params.id;
 
     if (!id) {
       return res.status(400).json({ message: "Invalid id!S" });
@@ -238,6 +238,7 @@ exports.getSavedCourse = async (req, res) => {
     const fetchUser = await User.findOne({ _id: userID });
     const savedCourses = fetchUser.savedCourses;
     const courses = await Course.find({ _id: { $in: savedCourses } });
+    if(courses.length < 1) return res.status(404).json({msg: "no saved courses"})
     const coursesToSend = courses.map((course) => {
       return {
         _id: course._id,
@@ -261,16 +262,16 @@ exports.addSaved = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     const {courseId} = req.params;
-    if (!courseId) {
-      return res.status(400).json("Course id not found!");
-    }
+    const course = Course.findOne({_id: courseId})
+    if(!course) return res.status(404).json({msg: "course not found"})
+    if(user.savedCourses.includes(courseId)) return res.status(400).json({msg: "course already saved"})
     user.savedCourses.push(courseId);
     const savedUser = await user.save();
     res.status(200).json({
       Message: "Course added successfully!",
     });
   } catch (error) {
-    res.status(408).json({
+    res.status(500).json({
       error: error,
     });
   }
@@ -320,6 +321,7 @@ exports.buyCourse = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found!" });
     }
+    if(user.boughtCourses.includes(courseId)) return res.status(400).json({msg: "course already bought"})
     user.boughtCourses.push(courseId);
     const deleteCourse = await user.save();
     res.status(200).json({
@@ -358,6 +360,7 @@ exports.getBoughtCourse = async (req, res) => {
         progress: progress,
       }
     })
+    if(coursesToSend.length < 1) return res.status(404).json({msg: "no bought courses"})
     res.status(200).json(coursesToSend)
   } catch (error) {
     res.status(500).json({
@@ -399,6 +402,8 @@ exports.addReview = async (req, res) => {
   }
   const course = await Course.findOne({_id: courseId})
   if(!course) return res.status(404).json({msg: "course not found"})
+  const reviewIds = course.data.reviews.map((review) => review.user) 
+  course.data.reviews = course.data.reviews.filter(review => !review.user.equals(userId));
   const newReview = {rating: rating, review: review, user: userId}
   course.data.reviews.push(newReview)
   const x = await course.save()
@@ -433,6 +438,7 @@ exports.getReviews = async (req, res) => {
   if(!courseId) return res.status(400).json({msg: "please send course Id"})
   const course = await Course.findOne({_id: courseId}).populate({path: "data.reviews.user", select: "name email"})
   if(!course) return res.status(404).json({msg: "course not found"})
+  if(course.data.reviews.length < 1) return rs.status(404).json({msg: "no reviews"})
   res.status(202).json(course.data.reviews)
   } catch (error) {
     res.status(500).json({msg: error.message})
@@ -444,7 +450,7 @@ exports.getLessons = async (req, res) => {
   try {
   const {courseId} = req.params
   if(!courseId) return res.status(400).json({msg: "please send course Id"})
-  const course = await Course.findOne({_id: courseId}).populate({path: "data.reviews.user", select: "name email"})
+  const course = await Course.findOne({_id: courseId})
   if(!course) return res.status(404).json({msg: "course not found"})
   res.status(202).json(course.data.lessons)
   } catch (error) {

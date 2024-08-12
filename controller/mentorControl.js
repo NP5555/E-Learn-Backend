@@ -57,6 +57,7 @@ exports.addMentorReviews = async (req, res) => {
   }
   const mentor = await Mentor.findOne({ _id: mentorId });
   if (!mentor) return res.status(404).json({ msg: "mentor not found" });
+  mentor.reviews = mentor.reviews.filter(review => !review.user.equals(userId));
   const newReview = { rating: rating, review: review, user: userId };
   mentor.reviews.push(newReview);
   await mentor.save()

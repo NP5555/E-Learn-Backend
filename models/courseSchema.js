@@ -22,6 +22,7 @@ const courseSchema = new mongoose.Schema({
       {
         rating: { type: Number },
         review: { type: String },
+        date: {type: Number, default: Date.now},
         user: { type: mongoose.Schema.Types.ObjectId, ref: "AuthUser" },
       },
     ],

@@ -8,7 +8,7 @@ router.get("/get/:id", courseControl.searchByID),
 router.get("/get/:id/details", courseControl.searchByIDdetails),
 router.get("/categories",verifyUserToken, courseControl.catagories);
 router.get("/search",verifyUserToken, courseControl.search);
-router.get("/serach/categories",verifyUserToken, courseControl.searchCategory);
+router.get("/search/categories",verifyUserToken, courseControl.searchCategory);
 router.get("/saved", verifyUserToken, courseControl.getSavedCourse) 
 router.post("/:courseId/saved",verifyUserToken, courseControl.addSaved) 
 router.delete("/:courseId/saved", verifyUserToken, courseControl.deleteSaved) 
