@@ -2,6 +2,8 @@ const Catagory = require("../models/catagoriesSchema");
 const Course = require("../models/courseSchema");
 const Mentor = require("../models/mentorSchema")
 const User = require("../models/userSchema");
+const Video = require("../models/videoSchema");
+
 
 // Api for featured data
 exports.featured = async (req, res) => {
@@ -487,6 +489,23 @@ exports.markUnDone = async (req, res) => {
   user.completed = user.completed.filter((lesson) => !lesson.equals(lessonId))
   await user.save()
   res.status(202).json({msg: "lesson marked undone"})
+  } catch (error) {
+    res.status(500).json({msg: error.message})
+
+  }
+}
+
+
+exports.getVideo = async (req, res) => {
+  try {
+    const userId = "66b97fe14505fa4d3a9793ce"
+    const {courseId, videoId} = req.params
+    const course = await Course.findOne({_id: courseId})
+    if(!course) return res.status(404).json({msg: "course not found"})
+    const user = await User.findOne({_id: userId})
+    if(!user.boughtCourses.includes(courseId)) return res.status(403).json({msg: "buy the course"})
+    const video = await Video.findOne({_id: videoId})
+    res.status(200).json({link: video.link})
   } catch (error) {
     res.status(500).json({msg: error.message})
 

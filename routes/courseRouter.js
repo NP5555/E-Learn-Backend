@@ -21,6 +21,9 @@ router.delete('/:courseId/reviews', verifyUserToken, courseControl.deleteReview)
 router.get('/:courseId/lessons', verifyUserToken, courseControl.getLessons)
 router.post('/:courseId/lessonId/:lessonId/markdone',verifyUserToken, courseControl.markDone)
 router.delete('/:courseId/lessonId/:lessonId/markdone',verifyUserToken, courseControl.markUnDone)
+router.get('/:courseId/video/:videoId',  courseControl.getVideo)
+
+
 
 
 
