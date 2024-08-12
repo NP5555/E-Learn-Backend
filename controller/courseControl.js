@@ -31,7 +31,7 @@ exports.featured = async (req, res) => {
     });
     const featuredCourses = await Promise.all(coursePromises);
     const resp = featuredCourses.map((course) => {
-      return {id: course._id, data: course.data.details}
+      return { id: course._id, data: course.data.details }
     })
     res.status(200).json(resp);
   } catch (error) {
@@ -51,13 +51,13 @@ exports.searchByID = async (req, res) => {
       return res.status(400).json({ message: "Invalid id!S" });
     }
     const course = await Course.findOne({ _id: id });
-    const mentor = await Mentor.findOne({_id: course.data.mentor})
+    const mentor = await Mentor.findOne({ _id: course.data.mentor })
     console.log(mentor)
 
     res.json({
       id: course._id,
       data: course.data,
-      mentor: {name: mentor.name, title: mentor.title, img: mentor.image, id: mentor._id}
+      mentor: { name: mentor.name, title: mentor.title, img: mentor.image, id: mentor._id }
     });
   } catch (error) {
     console.error("Error fetching courses:", error);
@@ -374,34 +374,31 @@ exports.deleteBoughtCourse = async (req, res) => {
 exports.addReview = async (req, res) => {
   try {
     const userId = req.id
-  const {rating, review, courseId} = req.body
-  if(!rating || !review || !courseId) {
-    return res.status(400).json({msg: "please privied all details"})
-  }
-  const course = await Course.findOne({_id: courseId})
-  const newReview = {rating: rating, review: review, user: userId}
-  course.data.reviews.push(newReview)
-  const x = await course.save()
-  res.status(201).json({msg: "review added"})
+    const { rating, review, courseId } = req.body
+    if (!rating || !review || !courseId) {
+      return res.status(400).json({ msg: "please privied all details" })
+    }
+    const course = await Course.findOne({ _id: courseId })
+    const newReview = { rating: rating, review: review, user: userId }
+    course.data.reviews.push(newReview)
+    const x = await course.save()
+    res.status(201).json({ msg: "review added" })
   } catch (error) {
-    res.status(500).json({msg: error.message})
-    
+    res.status(500).json({ msg: error.message })
   }
-
-
 }
 
 exports.deleteReview = async (req, res) => {
   try {
     const userId = req.id
-  const {courseId} = req.body
-  const course = await Course.findOne({_id: courseId})
-  course.data.reviews = course.data.reviews.filter((review) => review.user === userId)
-  console.log(course.data.reviews)
-  const x = await course.save()
-  res.status(201).json({msg: "review deleted"})
+    const { courseId } = req.body
+    const course = await Course.findOne({ _id: courseId })
+    course.data.reviews = course.data.reviews.filter((review) => review.user === userId)
+    console.log(course.data.reviews)
+    const x = await course.save()
+    res.status(201).json({ msg: "review deleted" })
   } catch (error) {
-    res.status(500).json({msg: error.message})
+    res.status(500).json({ msg: error.message })
 
   }
 }
