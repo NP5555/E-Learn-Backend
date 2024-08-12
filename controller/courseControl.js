@@ -308,7 +308,7 @@ exports.buyCourse = async (req, res) => {
   try {
     const userId = req.id;
     const {courseId} = req.params;
-    const course = Course.findOne({_id: courseId})
+    const course = await Course.findOne({_id: courseId})
     if(!course) return res.status(404).json({msg: "course not found"})
     if (!courseId) {
       return res.status(400).json("Course id not found!");
@@ -325,13 +325,15 @@ exports.buyCourse = async (req, res) => {
     }
     if(user.boughtCourses.includes(courseId)) return res.status(400).json({msg: "course already bought"})
     user.boughtCourses.push(courseId);
-    const deleteCourse = await user.save();
+    course.students.push(userId)
+    const BoughtCourse = await user.save();
+    const StudentCourse = await course.save();
     res.status(200).json({
       message: "Buy Course successfully!",
     });
   } catch (error) {
     res.status(501).json({
-      error: error,
+      error: error.message,
     });
   }
 }
@@ -382,7 +384,11 @@ exports.deleteBoughtCourse = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found!" });
     }
+    const course = await Course.findOne({_id: courseId})
+    course.students.pull(userId)
     user.boughtCourses.pull(courseId);
+    
+    const studentsList = await course.save();
     const boughtCourseList = await user.save();
     res.status(200).json({
       message: "Delete bought course successfully!",
