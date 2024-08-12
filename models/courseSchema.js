@@ -22,6 +22,7 @@ const courseSchema = new mongoose.Schema({
       {
         rating: { type: Number },
         review: { type: String },
+        date: {type: Number, default: Date.now},
         user: { type: mongoose.Schema.Types.ObjectId, ref: "AuthUser" },
       },
     ],
@@ -30,8 +31,8 @@ const courseSchema = new mongoose.Schema({
         title: { type: String },
         desc: { type: String },
         duration: { type: Number },
-        link: { type: String },
         img: { type: String },
+        video: { type: mongoose.Schema.Types.ObjectId, ref: "Video" },
       },
     ],
   },
